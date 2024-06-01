@@ -1,0 +1,112 @@
+<html>
+<head>
+    <title>JavaScript Example</title>
+</head>
+<body>
+    <h1>マイ語根</h1>
+    <p id="output"></p>
+    <script>
+        function gokon(word) {
+
+            // インドネシア語の接頭辞と接尾辞分類
+            var prefixes = ["perse", "diper", "memper"];
+            var prefixes_confuse = ["ter", "per", "di", "se", "ke"];
+            var prefixes_be = ["ber", "bel", "be", "pel"];
+            var prefixes_me = ["pe"];
+            var suffixes = ["kan", "i", "an", "lah", "kah", "pun", "nya"];
+        
+            function count_vowels(s) {
+                return s.replace(/[^aeiou]/gi, "").length;
+            }
+        
+            // 接尾辞を取り除く
+            for (var i = 0; i < suffixes.length; i++) {
+                var suffix = suffixes[i];
+                if (word.endsWith(suffix)) {
+                    word = word.replace(new RegExp(suffix + "$"), "");
+                    var sufcut = suffix;
+                    break;
+                }
+            }
+        
+            // 接頭辞(ber,be,bel,pel)を取り除く
+            for (var i = 0; i < prefixes_be.length; i++) {
+                var prefix = prefixes_be[i];
+                if (word.startsWith(prefix)) {
+                    word = word.replace(new RegExp("^" + prefix), "");
+                    if (prefix === "ber") {
+                        return [word, "r" + word, prefix + word];
+                    } else {
+                        return [prefix + word, word];
+                    }
+                    break;
+                }
+            }
+        
+            // 接頭辞を取り除く
+            for (var i = 0; i < prefixes.length; i++) {
+                var prefix = prefixes[i];
+                if (word.startsWith(prefix)) {
+                    word = word.replace(new RegExp("^" + prefix), "");
+                    return [word];
+                    break;
+                }
+            }
+        
+            // 接頭辞を取り除く(ややこしいもの)
+            for (var i = 0; i < prefixes_confuse.length; i++) {
+                var prefix = prefixes_confuse[i];
+                if (word.startsWith(prefix)) {
+                    word = word.replace(new RegExp("^" + prefix), "");
+                    return [word, prefix + word];
+                    break;
+                }
+            }
+        
+            // peをmeに変換
+            for (var i = 0; i < prefixes_me.length; i++) {
+                var prefix = prefixes_me[i];
+                if (word.startsWith(prefix)) {
+                    word = word.replace(new RegExp("^" + prefix), "me");
+                    break;
+                }
+            }
+        
+            if (word.startsWith("meny")) {
+                return ["s" + word.slice(4), word.slice(2)];
+            } else if (word.startsWith("menge") && count_vowels(word.slice(5)) <= 1) {
+                return [word.slice(5)];
+            } else if (word.startsWith("meng")) {
+                var modified_str = word.slice(4);
+                if (modified_str && "aiueo".includes(modified_str[0])) {
+                    return [modified_str, "k" + modified_str, "ng" + modified_str];
+                } else if (modified_str && "gh".includes(modified_str[0])) {
+                    return [modified_str];
+                }
+                return ["k" + modified_str];
+            } else if (word.startsWith("men")) {
+                var modified_str = word.slice(3);
+                if (modified_str && "cdjz".includes(modified_str[0])) {
+                    return modified_str;
+                }
+                return ["t" + modified_str, "n" + modified_str];
+            } else if (word.startsWith("mem")) {
+                var modified_str = word.slice(3);
+                if (modified_str && "bfv".includes(modified_str[0])) {
+                    return [modified_str];
+                }
+                return ["p" + modified_str, "m" + modified_str];
+            } else if (word.startsWith("me")) {
+                return [word.slice(2)];
+            }
+            return [word];
+        }
+    
+        // 元の単語の入力と語根の出力
+        var word = prompt("もとの単語を入力してください：");
+        
+        outputText = word + " の語根は " + gokon(word);
+        document.getElementById("output").textContent = outputText;
+    </script>
+</body>
+</html>
